@@ -1,55 +1,122 @@
 {
-	"name": "PRDC",
-
-	"namespace": "Stanford\\PRDC",
-
-	"description": "PRDC or Public Repeat Data Collection is a tool that allows a public survey url to be used to collect repeat instances of data without exposing any existing data",
-
-	"documentation": "README.md",
-
-	"authors": [
-		{
-			"name": "Andrew Martin",
-			"email": "andy123@stanford.edu",
-			"institution": "Stanford Medicine"
-		}
-	],
-
-	"permissions": [
-		"redcap_survey_page_top"
-	],
-	
-	"enable-every-page-hooks-on-system-pages": false,	
-
-	"links": {
-		"project": [
-
-		],
-		"control-center": [
-
-		]
-	},
-
-	"no-auth-pages": [
-
-	],
-
-	"project-settings": [
-
-	],
-
-	"system-settings": [
-
-	],
-
-	"crons": [
-
-	],
-
-	"compatibility": {
-		"php-version-min": "",
-		"php-version-max": "",
-		"redcap-version-min": "",
-		"redcap-version-max": ""
-	}
+    "name": "Public Repeat Data Collection",
+    "namespace": "Stanford\\PRDC",
+    "description": "PRDC or Public Repeat Data Collection is a tool that allows a public survey url to be used to collect repeat instances of data without exposing any existing data",
+    "documentation": "README.md",
+    "authors": [
+        {
+            "name": "Andrew Martin",
+            "email": "andy123@stanford.edu",
+            "institution": "Stanford Medicine"
+        }
+    ],
+    "permissions": [
+        "redcap_survey_page_top"
+    ],
+    "framework-version": 3,
+    "enable-every-page-hooks-on-system-pages": false,
+    "links": {
+        "project": [
+             {
+                "name": "Public Repeat Data Collection",
+                "icon": "fas fa-poll-h",
+                "url": "info.php"
+            }
+        ],
+        "control-center": [
+        ]
+    },
+    "no-auth-pages": [
+        "ajax"
+    ],
+    "project-settings": [
+        {
+            "key": "lookup-title",
+            "name": "<b>Lookup Title</b><br/>Enter the title for the lookup box that will appear on the public survey page</b>",
+            "required": false,
+            "type": "text"
+        },
+        {
+            "key": "lookup-header",
+            "name": "<b>Lookup Header</b><br/>Enter the page header you wish new records through the public survey url to be presented with</b>",
+            "required": false,
+            "type": "rich-text"
+        },
+        {
+            "key": "lookup-field",
+            "name": "<b>Field where lookup value is kept</b><br/>e.g. mrn (should be a <i>'text'</i> field)",
+            "required": true,
+            "type": "field-list"
+        },
+        {
+            "key": "lookup-event-id",
+            "name": "<b>Event id where the lookup field is kept</b><br/>Typically this is in the first event",
+            "required": true,
+            "type": "event-list"
+        },
+        {
+            "key": "validate-mrn",
+            "name": "<b>Validate Lookup as MRN</b><br/>If the Stanford MRN Lookup is enabled, we can notify if the mrn supplied is valid",
+            "required": true,
+            "type": "checkbox"
+        },
+        {
+            "key": "found-action",
+            "name": "<b>Instructions if Found</b><br/>What to tell the user to do if the record exists",
+            "required": true,
+            "type": "radio",
+            "choices":[
+                {
+                  "name" : "Add instance to repeating survey",
+                  "value" : "1"
+                },
+                {
+                  "name" : "Redirect to Survey Queue",
+                  "value" : "2"
+                }
+            ]
+        },
+        {
+            "key": "repeating-event-id",
+            "name": "<b>Event id where the repeating, follow-up survey is kept</b><br/>Typically this is in the first event",
+            "required": true,
+            "type": "event-list",
+            "branchingLogic" : {
+                "field": "found-action",
+                "value": "1"
+            }
+        },
+        {
+            "key": "repeating-form-name",
+            "name": "<b>Form containing repeating survey</b>Must be enabled as a repeating instrument and be in the repeating event id above",
+            "required": true,
+            "type": "form-list",
+            "branchingLogic" : {
+                "field": "found-action",
+                "value": "1"
+            }
+        },
+        {
+            "key": "enable-project-debug-logging",
+            "name": "<b>Enable Debug Logging</b><br><i>(optional)</i> Requires installation and configuration of emLogger",
+            "required": false,
+            "type": "checkbox"
+        }
+    ],
+    "system-settings": [
+        {
+            "key": "enable-system-debug-logging",
+            "name": "<b>Enable Debug Logging (system-wide)</b><i>(optional)</i> Requires installation and configuration of emLogger",
+            "required": false,
+            "type": "checkbox"
+        }
+    ],
+    "crons": [
+    ],
+    "compatibility": {
+        "php-version-min": "",
+        "php-version-max": "",
+        "redcap-version-min": "",
+        "redcap-version-max": ""
+    }
 }
