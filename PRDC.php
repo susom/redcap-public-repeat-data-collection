@@ -104,7 +104,7 @@ class PRDC extends \ExternalModules\AbstractExternalModule {
             $result = key($q);
         } elseif (count($q) > 1) {
             // We have more than one match for that FK.  This shouldn't happen.
-            \REDCap::logEvent($this->getModuleName() . " found more than one match for $this->lookup_field = '$search'.  As a result, a new record is being createed");
+            \REDCap::logEvent($this->getModuleName() . " found more than one match for $this->lookup_field = '$search'.  As a result, a new record is being created");
         } else {
             $result = false;
         }

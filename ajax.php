@@ -13,7 +13,7 @@ if (!empty($_POST['search'])) {
     // Set default response as not-found
     $result = array(
         "result" => "not-found",
-        "comment" => "<b>$search</b> was not found.<br>Try again or create a new record.",
+        "comment" => $module->lookup_field . " = <b>$search</b> was not found in the REDCap database.<br>Try again or create a new record.",
         "field" => $module->lookup_field,
         "valid" => null
     );
@@ -28,6 +28,8 @@ if (!empty($_POST['search'])) {
         // Lets check if MRN validation is on?
         if ($module->validate_mrn) {
             // Let's try to see if $search is a valid MRN
+            // is the mrnlookup module enabled on this project?
+            // if so, tgry and use it to get verify the mrn is present in the emr?
             // Currently not supported
             if ($valid) {
                 // $result['valid'] = true;
