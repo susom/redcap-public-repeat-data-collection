@@ -2,6 +2,8 @@
 namespace Stanford\PRDC;
 /** @var PRDC $module */
 
+use Exception;
+
 // Handle a Lookup
 if (!empty($_POST['search'])) {
 
@@ -9,6 +11,7 @@ if (!empty($_POST['search'])) {
 
     // Does this record already exist
     $record = $module->lookupRecord($search);
+    $module->emDebug("REcord: $record");
 
     // Set default response as not-found
     $result = array(
@@ -30,11 +33,62 @@ if (!empty($_POST['search'])) {
             // Let's try to see if $search is a valid MRN
             // is the mrnlookup module enabled on this project?
             // if so, try and use it to get verify the mrn is present in the emr?
-            // Currently not supported
-            if ($valid) {
-                // $result['valid'] = true;
-            } else {
-                // $result['valid'] = false;
+
+            // Default the result array to not found
+            $result = array(
+                "result" => "not-found",
+                "field" => $module->lookup_field,
+                "valid" => false
+            );
+
+            try{
+                // See if we can instantiate the MRN Lookup module and if so check the IRB
+                $mrn_lookup = \ExternalModules\ExternalModules::getModuleInstance('mrn-lookup');
+                $return_irb = $mrn_lookup->checkIRBAndGetAttestation($module->getProjectId());
+                if ($return_irb["status"]) {
+
+                    // IRB is valid so retrieve a token for the ID API
+                    $return_token = $mrn_lookup->retrieveIdToken();
+                    if ($return_token["status"]) {
+
+                        // Valid token was found so make the request to verify the MRN
+                        $return_api = $mrn_lookup->apiPost($pid, $search, $return_token["token"], $return_token["url"]);
+                        if ($return_api["status"]) {
+
+                            // If the person object is not empty, this MRN was found
+                            if (empty($return_api["person"])) {
+                                $result = array(
+                                    "valid" => false,
+                                    "result" => "not-found",
+                                    "comment" => "$module->lookup_field = '$search' was not found in STARR"
+                                );
+
+                            } else {
+
+                                // Person not found in the EMR
+                                $result = array(
+                                    //"valid" => true,
+                                    //"result" => "not-found",
+                                    "field" => $module->lookup_field,
+                                    "buttonAction" => "close",
+                                    "comment" => "$module->lookup_field = '$search' was found in STARR",
+                                    "buttonText" => "<i class='fas fa-plus-circle'></i> Create New Record for '$search'",
+                                    "btnClass" => "btn-success"
+                                );
+                            }
+                        } else {
+                            $result["comment"] = $return_api["message"];
+                        }
+                    } else {
+                        $result["comment"] = $return_token["message"];
+                    }
+                } else {
+                    $result["comment"] = $return_irb["message"];
+                }
+            } catch (\Exception $ex) {
+                $error = "MRN LookUp cannot be instantiated from public-repeat-data-collection";
+                $module->emError($error);
+                $result["comment"] = $error;
             }
         }
     } else {

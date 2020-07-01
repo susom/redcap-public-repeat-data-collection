@@ -56,7 +56,8 @@ $(document).ready(function() {
                     if (data.buttonAction === "close") {
                         btn.on('click', function() {
                             var field = $('input[name="' + data.field + '"]');
-                            if (field.length) field.val(i).trigger('blur');
+                            //if (field.length === 1) field.val(i).trigger('blur');
+                            if (field.length === 1) field.val(i);
                             $('.btn-cancel').trigger('click');
                         });
                     } else if (data.buttonUrl) {
