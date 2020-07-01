@@ -43,7 +43,7 @@ if (!empty($_POST['search'])) {
 
             try{
                 // See if we can instantiate the MRN Lookup module and if so check the IRB
-                $mrn_lookup = \ExternalModules\ExternalModules::getModuleInstance('mrn-lookup');
+                $mrn_lookup = \ExternalModules\ExternalModules::getModuleInstance('mrn_lookup');
                 $return_irb = $mrn_lookup->checkIRBAndGetAttestation($module->getProjectId());
                 if ($return_irb["status"]) {
 
@@ -60,7 +60,7 @@ if (!empty($_POST['search'])) {
                                 $result = array(
                                     "valid" => false,
                                     "result" => "not-found",
-                                    "comment" => "$module->lookup_field = '$search' was not found in STARR"
+                                    "comment" => "$module->lookup_field = '$search' was not found in STARR. <br>Try again or Cancel to create a new record."
                                 );
 
                             } else {
