@@ -304,7 +304,9 @@ class RepeatingForms
 
         // If the record_ids (and optionally event_ids) match, return the data.
         if ($this->is_longitudinal) {
-            $size = sizeof($this->data[$record_id][$event_id]);
+            $events = $this->data[$record_id][$event_id];
+            $events = empty($events) ? [] : $events;    // force to array
+            $size = sizeof($events);
             if ($size < 1) {
                 $this->last_error_message = "There are no instances in event $event_id for record $record_id " . __FUNCTION__;
                 return false;
